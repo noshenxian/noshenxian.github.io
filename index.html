@@ -186,9 +186,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2024-01-12 15:17:14 / 修改时间：15:41:47" itemprop="dateCreated datePublished" datetime="2024-01-12T15:17:14+08:00">2024-01-12</time>
+      <time title="创建时间：2024-01-12 15:17:14" itemprop="dateCreated datePublished" datetime="2024-01-12T15:17:14+08:00">2024-01-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-01-13 10:12:46" itemprop="dateModified" datetime="2024-01-13T10:12:46+08:00">2024-01-13</time>
     </span>
 
   
@@ -206,63 +212,14 @@
 <h2 id="mirror和replicate的区别">mirror和replicate的区别</h2>
 <p>mc mirror 用于在两个minio server中的桶之间进行数据同步。mc mirror 命令类似于 Unix rsync 命令，会对源和目标地址进行比较，并只将新增或修改的内容从源复制到目标，可以实现将源目录快速同步到目标目录。</p>
 <p>mc replicate 用于配置 Minio 服务器上的桶(replication rules)用于在区域间自动复制对象。这通常用于地理冗余和跨区域数据复制。最大的优势是在源桶和目标桶之间实现自动、异步的对象复制。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mc replicate add &lt;source-bucket&gt; --priority &lt;arg&gt; --remote-bucket &lt;arg&gt; --storage-class &lt;value&gt; --tags &lt;value&gt; --prefix &lt;string&gt; --arn &lt;string&gt;</span><br></pre></td></tr></table></figure>
-<h1 id="replicate配置">replicate配置</h1>
-<p>两者的主要区别在于mc replicate 适用于设置自动跨区域复制规则，而 mc mirror 则更适合于手动的、一次性的数据迁移或备份。</p>
-<h2 id="配置别名源节点和备节点">配置别名(源节点和备节点)</h2>
-<p>alias主要的作用是方便好记,方便后续配置。 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mc alias set minio-server http://10.8.40.1:9000 minio password --api s3v4 </span><br><span class="line">mc alias set minio-backup http://10.8.40.2:9000 minio password --api s3v4 </span><br><span class="line">mc alias ls</span><br></pre></td></tr></table></figure></p>
-<h2 id="创建bucket源节点">创建bucket(源节点)</h2>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mc mb -p minio-server/ucap </span><br><span class="line">mc mb -p minio-backup/ucap </span><br><span class="line">mc version enable minio-server/ucap </span><br><span class="line">mc version enable minio-backup/ucap</span><br></pre></td></tr></table></figure>
-<h2 id="配置双向同步的主主复制源节点">配置双向同步的主主复制(源节点)</h2>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#主节点上配置 </span><br><span class="line">mc replicate add --remote-bucket http://minio:password@10.8.40.2:9000/ucap --replicate &quot;delete,delete-marker,existing-objects&quot; --sync minio-server/ucap --limit-upload 200Mi  </span><br><span class="line"></span><br><span class="line">#备份节点配置-如果是灾备，只有执行1条即可。 </span><br><span class="line">mc replicate add --remote-bucket http://minio:password@10.8.40.1:9000/ucap --replicate &quot;delete,delete-marker,existing-objects&quot; --sync minio-backup/ucap --limit-upload 200Mi</span><br></pre></td></tr></table></figure>
-<h2 id="测试效果">测试效果</h2>
-<p>用以下方法测试在多点写入，是否都可以访问。 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mc cp /etc/hosts minio-server/ucap </span><br><span class="line">mc cp /etc/alias minio-backup/ucap </span><br><span class="line">curl http://10.8.40.1:9000/ucap/hosts </span><br><span class="line">curl http://10.8.40.2:9000/ucap/hosts </span><br><span class="line">curl http://10.8.40.1:9000/ucap/alias </span><br><span class="line">curl http://10.8.40.2:9000/ucap/alias</span><br></pre></td></tr></table></figure></p>
-<h2 id="replicate相关状态查看">replicate相关状态查看</h2>
-<table>
-<thead>
-<tr class="header">
-<th>命令</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><a target="_blank" rel="noopener" href="https://www.hxstrive.com/subject/minio.htm?id=621&amp;p=618">mc replicate add</a></td>
-<td>添加服务器端复制配置规则</td>
-</tr>
-<tr class="even">
-<td><a target="_blank" rel="noopener" href="https://www.hxstrive.com/subject/minio.htm?id=622&amp;p=618">mc replicate edit</a></td>
-<td>修改现有的服务器端复制配置规则</td>
-</tr>
-<tr class="odd">
-<td><a target="_blank" rel="noopener" href="https://www.hxstrive.com/subject/minio.htm?id=623&amp;p=618">mc replicate ls</a></td>
-<td>列出服务器端复制配置规则</td>
-</tr>
-<tr class="even">
-<td><a target="_blank" rel="noopener" href="https://www.hxstrive.com/subject/minio.htm?id=624&amp;p=618">mc replicate status</a></td>
-<td>显示服务器端复制状态</td>
-</tr>
-<tr class="odd">
-<td><a target="_blank" rel="noopener" href="https://www.hxstrive.com/subject/minio.htm?id=625&amp;p=618">mc replicate resync</a></td>
-<td>重新复制所有以前复制的对象</td>
-</tr>
-<tr class="even">
-<td><a target="_blank" rel="noopener" href="https://www.hxstrive.com/subject/minio.htm?id=626&amp;p=618">mc replicate export</a></td>
-<td>导出服务器端复制配置</td>
-</tr>
-<tr class="odd">
-<td><a target="_blank" rel="noopener" href="https://www.hxstrive.com/subject/minio.htm?id=627&amp;p=618">mc replicate import</a></td>
-<td>以 JSON 格式导入服务器端复制配置</td>
-</tr>
-<tr class="even">
-<td><a target="_blank" rel="noopener" href="https://www.hxstrive.com/subject/minio.htm?id=628&amp;p=618">mc replicate rm</a></td>
-<td>删除服务器端复制配置规则</td>
-</tr>
-</tbody>
-</table>
-<h1 id="mirror后续再补.....">mirror后续再补.....</h1>
-<p>mirror后续再补.....</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/01/12/Minio%E6%96%87%E4%BB%B6%E9%95%9C%E5%83%8F%E5%90%8C%E6%AD%A5%E9%85%8D%E7%BD%AE/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -316,9 +273,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2024-01-03 22:08:11 / 修改时间：23:12:19" itemprop="dateCreated datePublished" datetime="2024-01-03T22:08:11+08:00">2024-01-03</time>
+      <time title="创建时间：2024-01-03 22:08:11" itemprop="dateCreated datePublished" datetime="2024-01-03T22:08:11+08:00">2024-01-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-01-13 10:12:55" itemprop="dateModified" datetime="2024-01-13T10:12:55+08:00">2024-01-13</time>
     </span>
 
   
@@ -333,16 +296,14 @@
     <div class="post-body" itemprop="articleBody">
           <h1 id="背景">背景</h1>
 <p>项目中很多时候需要使用nginx类服务作为反向代理来打通不同业务的互相访问使用，一般情况下项目中会直接使用到nginx的proxy模块来实现业务的反向代理，近年来国家高度重视网络安全，各类的安全渗透扫描测试层出不穷，项目上如果没有专门配置安全管理员或安全类工程师的情况下，nginx很容易会被识别为网络攻击发起者，为消除不必要的误会，以下就如何加强反向代理服务的安全性、维护反向代理自身API接口安全合理性进行。</p>
-<figure>
-<img src="https://ucapdev.work/2024/01/03/代理服务的安全性保障/proxy.png" alt="1704292743149" /><figcaption aria-hidden="true">1704292743149</figcaption>
-</figure>
-<h1 id="nginx代理很受伤">nginx代理很受伤</h1>
-<p>一般项目中nginx的反向代理是不具备安全防护，对于无论是来自于外部、内部的授权或非授权的安全扫描都是无法做到正确识别的，在安全设备waf、入侵防御等安全设备中很容易就认为nginx这台服务器被入侵了，需要做出合理的解释来证明这些行为，每次发生类似事件，项目经理就要跟客户来回的进行解释，解释服务器是做什么用的，不会被入侵等等口水话，项目一多根本就没精力来应付这些破事，进而就会引发客户对公司服务的不信任，影响到年底的满意度打分。</p>
-<h1 id="怎么解决">怎么解决？</h1>
-<p>本着能白嫖就绝不放过的原则，这里介绍下使用雷池waf来加强nginx自身的安全性能，雷池（SafeLine）是长亭科技耗时近 10 年倾情打造的 WAF，核心检测能力由智能语义分析算法驱动。</p>
-<p>这里省略安装过程，安装链接为<a target="_blank" rel="noopener" href="https://waf-ce.chaitin.cn/docs/guide/install">雷池</a> ，官方写的很详细，这里就不扯犊子了。</p>
-<p>谁用谁知道，哈哈！吹水文完工。</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/01/03/%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%AE%89%E5%85%A8%E6%80%A7%E4%BF%9D%E9%9A%9C/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
