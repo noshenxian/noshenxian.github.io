@@ -188,7 +188,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2024-06-25 14:20:32 / 修改时间：14:24:16" itemprop="dateCreated datePublished" datetime="2024-06-25T14:20:32+08:00">2024-06-25</time>
+      <time title="创建时间：2024-06-25 14:20:32 / 修改时间：15:18:01" itemprop="dateCreated datePublished" datetime="2024-06-25T14:20:32+08:00">2024-06-25</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -218,25 +218,15 @@ id="arm环境中编译安装mysql5.7.44数据库">ARM环境中编译安装mysql5
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar xvf mysql-5.7.44.tar.gz</span><br></pre></td></tr></table></figure>
 <h2 id="创建并进入编译目录">创建并进入编译目录</h2>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd mysql-5.7.44</span><br><span class="line">mkdir build</span><br><span class="line">cd build</span><br></pre></td></tr></table></figure>
-<h2 id="配置编译选项">配置编译选项</h2>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local/mysql \</span><br><span class="line">          -DMYSQL_DATADIR=/usr/local/mysql/data \</span><br><span class="line">          -DSYSCONFDIR=/etc/mysql \</span><br><span class="line">          -DWITH_MYISAM_STORAGE_ENGINE=1 \</span><br><span class="line">          -DWITH_INNOBASE_STORAGE_ENGINE=1 \</span><br><span class="line">          -DWITH_MEMORY_STORAGE_ENGINE=1 \</span><br><span class="line">          -DWITH_READLINE=1 \</span><br><span class="line">          -DENABLED_LOCAL_INFILE=1 \</span><br><span class="line">          -DDEFAULT_CHARSET=utf8 \</span><br><span class="line">          -DDEFAULT_COLLATION=utf8_general_ci \</span><br><span class="line">          -DDOWNLOAD_BOOST=1 \</span><br><span class="line">          -DWITH_BOOST=/tmp/</span><br></pre></td></tr></table></figure>
-<h2 id="编译mysql">编译mysql</h2>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make -j$(nproc)</span><br></pre></td></tr></table></figure>
-<h2 id="安装mysql">安装mysql</h2>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
-<h2 id="初始化数据库">初始化数据库</h2>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/local/mysql/bin/mysqld --initialize --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data</span><br></pre></td></tr></table></figure>
-<p>初始化完成后有临时root密码，记得复制</p>
-<h2
-id="配置目录权限根据实际目录授权即可">配置目录权限(根据实际目录授权即可)</h2>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chown -R mysql:mysql /var/lib/mysql</span><br></pre></td></tr></table></figure>
-<h2 id="安全设置">安全设置</h2>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/local/mysql/bin/mysql_secure_installation</span><br></pre></td></tr></table></figure>
-<h2 id="启动mysql服务">启动mysql服务</h2>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cp mysql.server /etc/init.d/mysql.server</span><br><span class="line">/etc/init.d/mysql.server start</span><br></pre></td></tr></table></figure>
-<h2 id="修改root密码">修改root密码</h2>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER USER &#x27;root&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;XXXxxx&#x27;;</span><br></pre></td></tr></table></figure>
-
+<p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/06/25/ARM%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85mysql5.7.44%E6%95%B0%E6%8D%AE%E5%BA%93/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
